@@ -1,67 +1,260 @@
 #include "main.h"
 
-void print_buffer(char buffer[], int *buff_ind);
-
 /**
- * _printf - Printf function
- * @format: format.
- * Return: Printed chars.
- Change updated
+ * _printf - Function produces output according
+ * to input in format given.
+ *
+ * @format: Input characters.
+ * @...: Other parameters.
+ *
+ * Return: Nothing.
  */
+
 int _printf(const char *format, ...)
 {
-	int i, printed = 0, printed_chars = 0;
-	int flags, width, precision, size, buff_ind = 0;
-	va_list list;
-	char buffer[BUFF_SIZE];
+    va_list arglist;
+    int charcount = 0;
 
-	if (format == NULL)
-		return (-1);
+    va_start(arglist, format);
 
-	va_start(list, format);
+    while (*format != '\0')
+    {
+        if (*format == '%')
+        {
+            format++;
+            if (*format == '%')
+            {
+                _putchar('%');
+                charcount++;
+            }
+            else if (*format == 'c')
+            {
+                char c = va_arg(arglist, int);
+                _putchar(c);
+                charcount++;
+            }
+            else if (*format == 's')
+            {
+                char *s = va_arg(arglist, char*);
+                while (*s)
+                {
+                    _putchar(*s);
+                    charcount++;
+                    s++;
+                }
+            }
+            else if (*format == 'd' || *format == 'i')
+            {
+                int num = va_arg(arglist, int);
+                if (num < 0)
+                {
+                    _putchar('-');
+                    charcount++;
+                    num = -num;
+                }
+                if (num == 0)
+                {
+                    _putchar('0');
+                    charcount++;
+                }
+                else
+                {
+                    int num_digits = 0, i;
+                    int tmp_num = num;
+                    char *num_str;
+                    while (tmp_num > 0)
+                    {
+                        num_digits++;
+                        tmp_num /= 10;
+                    }
+                    num_str = malloc(sizeof(char) * num_digits);
+                    
+                    if (num_str == NULL)
+                        return (NULL);
+                    
+                    i = num_digits - 1;
+                    for (; i >= 0; i--)
+                    {
+                        num_str[i] = '0' + (num % 10);
+                        num /= 10;
+                    }
+                    i = 0;
+                    for (; i < num_digits; i++)
+                    {
+                        _putchar(num_str[i]);
+                        charcount++;
+                    }
+                }
+            }
+            else if (*format == 'x' || *format == 'X')
+            {
+                unsigned int num = va_arg(arglist, unsigned int);
+                if (num == 0)
+                {
+                    _putchar('0');
+                    charcount++;
+                }
+                else
+                {
+                    char num_str[20];
+                    int index = 0, i;
+                    while (num > 0)
+                    {
+                        int digit = num % 16;
+                        if (digit < 10)
+                        {
+                            num_str[index++] = '0' + digit;
+                        }
+                        else
+                        {
+                            if (*format == 'x')
+                            {
+                                num_str[index++] = 'a' + digit - 10;
+                            }
+                            else
+                            {
+                                num_str[index++] = 'A' + digit - 10;
+                            }
+                        }
+                        num /= 16;
+                    }
+                    i = index - 1;
+                    for (; i >= 0; i--)
+                    {
+                        _putchar(num_str[i]);
+                        charcount++;
+                    }
+                }
+            }
+            else if (*format == 'o')
+            {
+                unsigned int num = va_arg(arglist, unsigned int);
+                if (num == 0)
+                {
+                    _putchar('0');
+                    charcount++;
+                }
+                else
+                {
+                    int num_digits = 0, i;
+                    unsigned int tmp_num = num;
+                    char *num_str;
+                    while (tmp_num > 0)
+                    {
+                        num_digits++;
+                        tmp_num /= 8;
+                    }
+                    num_str = malloc(sizeof(char) * num_digits);
+                    
+                    if (num_str == NULL)
+                        return (NULL);
+                    
+                    
+                    i = num_digits - 1;
+                    for (; i >= 0; i--)
+                    {
+                        num_str[i] = '0' + (num % 8);
+                        num /= 8;
+                    }
+                    i = 0;
+                    for (; i < num_digits; i++)
+                    {
+                        _putchar(num_str[i]);
+                        charcount++;
+                    }
+                }
+            }
+            else if (*format == 'p')
+            {
+                void *ptr = va_arg(arglist, void *);
+                int num_digits = 0, i;
+                char *hex_str;
+                unsigned long int ui = (unsigned long int)ptr;
+                unsigned long int tmp_num = ui;
+                _putchar('0');
+                _putchar('x');
+                while (tmp_num > 0)
+                {
+                    num_digits++;
+                    tmp_num /= 16;
+                }
+                hex_str = malloc(sizeof(char) * num_digits);
+                
+                if (hex_str == NULL)
+                    return (NULL);
+                    
+                
+                i = num_digits - 1;
+                for (; i >= 0; i--)
+                {
+                    int rem = ui % 16;
+                    if (rem < 10)
+                    {
+                        hex_str[i] = rem + '0';
+                    } else
+                    {
+                        hex_str[i] = rem - 10 + 'a';
+                    }
+                    ui /= 16;
+                }
+                i = 0;
+                for (; i < num_digits; i++)
+                {
+                    _putchar(hex_str[i]);
+                    charcount++;
+                }
+            }
+            else if (*format == 'u')
+            {
+                unsigned int num = va_arg(arglist, unsigned int);
+                if (num == 0)
+                {
+                    _putchar('0');
+                    charcount++;
+                }
+                else {
+                    int num_digits = 0, i;
+                    unsigned int tmp_num = num;
+                    char *num_str;
+                    while (tmp_num > 0)
+                    {
+                        num_digits++;
+                        tmp_num /= 10;
+                    }
+                    num_str = malloc(sizeof(char) * num_digits);
+                    
+                    if (num_str == NULL)
+                        return (NULL);
+                        
+                    i = num_digits - 1;
+                    for (; i >= 0; i--)
+                    {
+                        num_str[i] = '0' + (num % 10);
+                        num /= 10;
+                    }
+                    i = 0;
+                    for (; i < num_digits; i++)
+                    {
+                        _putchar(num_str[i]);
+                        charcount++;
+                    }
+                }
+            }
+            else
+            {
+                _putchar('%');
+                _putchar(*format);
+                charcount += 2;
+            }
+        }
+        else
+        {
+            _putchar(*format);
+            charcount++;
+        }
+        format++;
+    }
 
-	for (i = 0; format && format[i] != '\0'; i++)
-	{
-		if (format[i] != '%')
-		{
-			buffer[buff_ind++] = format[i];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer(buffer, &buff_ind);
-			/* write(1, &format[i], 1);*/
-			printed_chars++;
-		}
-		else
-		{
-			print_buffer(buffer, &buff_ind);
-			flags = get_flags(format, &i);
-			width = get_width(format, &i, list);
-			precision = get_precision(format, &i, list);
-			size = get_size(format, &i);
-			++i;
-			printed = handle_print(format, &i, list, buffer,
-				flags, width, precision, size);
-			if (printed == -1)
-				return (-1);
-			printed_chars += printed;
-		}
-	}
-
-	print_buffer(buffer, &buff_ind);
-
-	va_end(list);
-
-	return (printed_chars);
-}
-
-/**
- * print_buffer - Prints the contents of the buffer if it exist
- * @buffer: Array of chars
- * @buff_ind: Index at which to add next char, represents the length.
- */
-void print_buffer(char buffer[], int *buff_ind)
-{
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
-
-	*buff_ind = 0;
+    va_end(arglist);
+    return charcount;
 }
