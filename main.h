@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-int printf(const char *format, ...);
 int putchar(char c);
 
 #endif
