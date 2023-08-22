@@ -1,11 +1,13 @@
-#include <unistd.h>
+#include "main.h"
 
 /**
- * _putchar - Outputs a character to the stdout
- * @c: The character to print
- * Return: 1 on success, -1 on error
+ * _putchar - Function prints char
+ *
+ * @c: Character to be input.
+ *
+ * Return: 1 Success, -1 Error
  */
-int _putchar(char c)
-{
-	return (write(1, &c, 1));
+
+int _putchar(char c) {
+    return write(fileno(stdout), &c, 1);
 }
